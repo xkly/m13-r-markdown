@@ -2,7 +2,6 @@
 output: html_document
 ---
 
-
 ```{r, echo=FALSE, message=FALSE}
 ### Exercise 1 ###
 
@@ -21,19 +20,37 @@ GetReview <- function(movie) {
   # Note: the HTTR library will take care of spaces in the arguments
   # See the interactive console for more detail:https://developer.nytimes.com/movie_reviews_v2.json#/Console/GET/reviews/search.json
   
+  base.url <- "http://api.nytimes.com/svc/movies/v2/reviews/search.json?"
+  query.params <- list(query = movie, api_key = "d9941f8ea4ce4a4f8e90d5fd30aa729d")
+  
   
   # Request data using your search query
-  
+  request <- GET(base.url, query = query.params)
+  movie.data <- fromJSON(content(request, "text"))
   
   # Flatten the data stored in the `$results` key of the data returned to you
+  movie.data <- flatten(movie.data$results)
   
   # From the most recent review, store the headline, short summary, and link to full article each in their own variables
+  movie.headline <- movie.data$headline
+  movie.short.summary <- movie.data$summary_short
+  movie.link <- movie.data$link.url
 
   # Return an list of the three pieces of information from above
+  return(list(headline = movie.headline, short.summary = movie.short.summary, link = movie.link))
   
 }
 
 
 # Create a variable called `movie.info` by passing your movie to your GetReview function
+movie.info <- GetReview(movie)
 
 ```
+
+# `r movie`
+
+## `r movie.info$headline`
+
+> `r movie.info$short.summary`
+
+Follow [this link](`r movie.info$link`) to read the full review
